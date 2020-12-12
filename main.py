@@ -88,7 +88,7 @@ class VKUser:
 if __name__ == '__main__':
     man_1 = VKUser(input_of_ids_items[0])
     man_2 = VKUser(input_of_ids_items[1])
-    man_1.__and__(man_2)
-    man_1.__str__()
-    man_2.__str__()
+    man_1.__and__.__call__(man_2)
+    man_1.__str__.__call__()
+    man_2.__str__.__call__()
 # use for example: 280572200 198747324
