@@ -4,7 +4,7 @@ from pprint import pprint
 from file_with_decorators import decorator_logger, decorator_with_way_to_file
 
 # ____________________ 1-st stage: we get token ____________________________________________________
-#
+
 # oauth_api_base_url = 'https://oauth.vk.com/authorize'
 # APP_ID = 7649081
 # redirect_uri = 'https://oauth.vk.com/blank.html'
