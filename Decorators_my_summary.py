@@ -288,3 +288,116 @@ def make_log(path: str) -> Callable:
         return new_function
 
     return log
+
+
+# _________________________________________________________________________
+# size decorators from teacher
+from pympler import asizeof
+
+
+def size_decor(old_function):
+    calls = 0
+    total_size = 0
+
+    def new_function(*args, **kwargs):
+        nonlocal calls, total_size
+        calls += 1
+
+        result = old_function(*args, **kwargs)
+        size_result = asizeof.asizeof(result)
+        total_size += size_result
+        medium_size = total_size / calls
+
+        print(f'Вызов:{old_function.__name__}\n'
+              f'Размер: {size_result}\n'
+              f'В среднем: {medium_size}\n')
+
+    return new_function
+
+
+def parametrized_size_decor(min_size):
+    calls = 0
+    total_size = 0
+
+    def my_size_decor(old_function):
+        def new_function(*args, **kwargs):
+            nonlocal calls, total_size
+            calls += 1
+
+            result = old_function(*args, **kwargs)
+            size_result = asizeof.asizeof(result)
+            total_size += size_result
+            medium_size = total_size / calls
+
+            if size_result >= min_size:
+                print(f'Вызов:{old_function.__name__}\n'
+                      f'Размер: {size_result}\n'
+                      f'В среднем: {round(medium_size, 2)}\n')
+            else:
+                raise ValueError('ERROR: size_result <= min_size')
+
+            return result
+
+        return new_function
+
+    return my_size_decor
+
+
+@size_decor
+def foo(number):
+    return [i for i in range(number)]
+
+
+@parametrized_size_decor(999)
+def foo2(n):
+    return [i for i in range(n)]
+
+
+# if __name__ == '__main__':
+#     foo2(73333)
+#     foo2(433)
+#     foo2(544)
+#     foo(123)
+#     foo(321)
+#     foo(432)
+# _________________________________________________________________________
+# one more example from teacher
+
+import time
+from collections import OrderedDict
+
+
+def wrap_cache_able(param):
+    my_cache = OrderedDict()
+
+    def my_decorator(old_function):
+
+        def inner(*args, **kwargs):
+            print(len(my_cache) * 10)
+            key = (print(f"{old_function.__name__}\n"), str(args), str(kwargs))
+            result = my_cache.get(key)
+            if result is not None:
+                return result
+            else:
+                result = old_function(*args, **kwargs)
+                my_cache[key] = result
+                if len(my_cache) > param:
+                    my_cache.popitem(last=False)
+                return result
+
+        return inner
+
+    return my_decorator
+
+
+@wrap_cache_able(7)
+def concatenate(str_1, str_2):
+    time.sleep(0.5)
+    return f'{str_1}{str_2}'
+
+# print(concatenate('abc', 'erd'))
+# print(concatenate('abc', 'asd'))
+# print(concatenate('abc', 'zxc'))
+# print(concatenate('abc', 'xcv'))
+# print(concatenate('abc', 'vbn'))
+# print(concatenate('abc', 'ghj'))
